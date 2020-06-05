@@ -1,0 +1,292 @@
+/**
+ * @author WANG ZhiTao
+ * From XJTU
+ * 这个单链表是边听尚硅谷讲，边自己写，类下的方法基本都是自己的思路写的，和教程不一样，希望得到大佬的批评建议！
+ * 一共10个方法！
+ * 注: 还有一个遗留问题: 翻转单链表，我自己写的方法出现了问题，如果有大佬感兴趣，可以解决，我想请教一下，谢谢！
+ * 问题代码分别在41-48行(主函数调用方法)，180-202行(方法体本身)！
+ */
+
+package cn.edu.xjtu;
+
+import java.util.Stack;
+
+public class SingleLinkedListDemo1 {
+    public static void main(String[] args){
+
+        HeroNode h1 = new HeroNode(8,"八八八","eight");
+        HeroNode h2 = new HeroNode(12,"十二","twelve");
+        HeroNode h3 = new HeroNode(5,"呜呜呜","five");
+        HeroNode h4 = new HeroNode(6,"666","six");
+        HeroNode h5 = new HeroNode(20,"二十","twenty");
+        SingleLinkedList s1 = new SingleLinkedList();
+        SingleLinkedList s2 = new SingleLinkedList();
+
+        System.out.println("--------------------------按序加入显示操作---------------------------------");
+        s1.addByOrder(h1);
+        s1.addByOrder(h2);
+        s1.addByOrder(h3);
+        s1.addByOrder(h4);
+        s1.list();
+        //s1.edit(h4,"西安交大","研究生院");
+        int number = s1.node_num();
+        System.out.printf("整个链表共有%d个结点",number);
+        System.out.println();
+        s1.search_k(3);
+        System.out.println();
+
+        System.out.println("----------------------------逆序打印单链表-----------------------------------");
+        s1.reverse_Print();
+        System.out.println();
+//        这一部分是用来翻转链表的主函数，但是运行不出来，并且后面的删除操作也运行不出来。
+//        SingleLinkedList s_reverse = new SingleLinkedList();
+//        s_reverse = s1.reverse_LinkedList();/**这一句话出现了很大的问题，运行这一句话后：
+//                                                 1. 不但后面的删除操作运行不出来；2. 而且一直处在运行状态，需要手动停止
+//                                                 3. 可能是一直在创建对象，然后陷入了死循环；4. 应该是类方法的逻辑出现了错误*/
+//        System.out.println("翻转后的单链表是:");
+//        s_reverse.list();
+//        System.out.println();
+
+
+        System.out.println("-------------------------删除操作----------------------------------------");
+        System.out.println("---删除空链表----");
+        s2.delete(h5);
+        System.out.println();
+        System.out.println("---删除链表第一个结点----");
+        s1.delete(h3);
+        s1.list();
+        System.out.println();
+        System.out.println("---删除链表中间结点----");
+        s1.delete(h1);
+        s1.list();
+        System.out.println();
+        System.out.println("---删除链表最后一个结点----");
+        s1.delete(h2);
+        s1.list();
+        System.out.println();
+        System.out.println("---删除链表不存在的结点----");
+        s1.delete(h5);
+
+    }
+}
+
+class HeroNode{
+
+    public int no;
+    public String name;
+    public String nickname;
+    public HeroNode next;
+
+    public HeroNode(int no,String name,String nickname){
+        this.no = no;
+        this.name = name;
+        this.nickname = nickname;
+
+    }
+
+    @Override
+    public String toString() {
+        return "HeroNode{" +
+                "no=" + no +
+                ", name='" + name + '\'' +
+                ", nickname='" + nickname + '\'' +
+                '}';
+    }
+
+
+}
+
+class SingleLinkedList{
+
+    private HeroNode head = new HeroNode(0,"","");
+    //方法一: 在单链表尾部添加结点
+    public void add(HeroNode hero){
+
+        HeroNode temp = head;
+        while(temp.next!=null){
+            temp = temp.next;
+        }
+        temp.next = hero;
+    }
+    //方法二: 如果单链表有序号属性，按序添加结点
+    public void addByOrder(HeroNode hero) {
+        HeroNode temp = head;
+        HeroNode temp2 = head;
+        while(temp.next!=null){
+            temp = temp.next;
+            if(temp.no<hero.no){
+                if(temp.next!=null){
+                    HeroNode sub = temp.next;
+                    if(sub.no > hero.no){
+                        hero.next = temp.next;
+                        temp.next = hero;
+
+                        break;
+                    }
+                }
+            }else{
+                hero.next = temp2.next;
+                temp2.next = hero;
+                break;
+
+            }
+        }
+        if(temp.next==null){
+            temp.next = hero;
+
+        }
+
+    }
+    //方法三: 显示单链表所有结点，在此处重写了toString方法，由Generate一键生成
+    public void list(){
+        if(head.next==null){
+            System.out.println("链表为空");
+            return;
+        }
+        HeroNode sub = head.next;
+        while(sub.next!=null){
+            System.out.println(sub);
+            sub = sub.next;
+        }
+        System.out.println(sub);
+    }
+    //方法四: 查找单链表中的倒数第K个结点
+    public void search_k(int k){
+        int number = node_num();
+        if(number<k){
+            System.out.printf("链表中没有这么结点,只有%d个结点",number);
+        }else{
+            int reverse = number-k+1;//reverse是正数结点
+            int count = 0;
+            HeroNode temp = head;
+            while(count<reverse){
+                temp = temp.next;
+                count++;
+            }
+            System.out.printf("倒数第%d个结点是:",k);
+            System.out.println();
+            System.out.println(temp);
+        }
+    }
+
+    //方法五: 编辑单链表中的字符串
+    public void edit(HeroNode hero,String name,String nickname){
+        hero.name = name;
+        hero.nickname = nickname;
+        System.out.println(hero);
+    }
+    //方法六: 重新定义一个单链表对象，用来添加另外一个单链表的结点
+    //这个方法主要用来反转链表，但是主函数运行不下去，并且后面的删除操作也运行不出来，是一个问题
+    public SingleLinkedList reverse_LinkedList(){
+        SingleLinkedList ss = new SingleLinkedList();
+        HeroNode temp = this.head;
+        while(temp.next!=null){
+            temp = temp.next;
+
+            ss.add_Head(temp);
+        }
+        return ss;
+    }
+    //方法七: 添加方式是在头部添加，有翻转的功能
+    //在链表的最前面加结点，用来为反转链表做铺垫
+    public void add_Head(HeroNode hero){
+        HeroNode temp = this.head;
+        while(temp.next!=null){
+            hero.next = temp.next;
+            temp.next = hero;
+            break;
+        }
+        if(temp.next==null){
+            temp.next = hero;
+        }
+    }
+
+    //方法八: 用栈的后入先出的特点进行单链表的逆序遍历
+    public void reverse_Print(){
+        HeroNode temp = head;
+        Stack<HeroNode> stack = new Stack<HeroNode>();
+        if(head.next==null){
+            System.out.println("这是个空链表，不能打印");
+        }else{
+            while(temp.next!=null){
+                temp = temp.next;
+                stack.push(temp);
+            }
+
+        }
+        while(stack.size()>0){
+            System.out.println(stack.pop());
+        }
+
+    }
+
+    //方法九: 计算单链表内的结点个数
+    public int node_num(){
+        HeroNode temp = head;
+        int count=0;
+        while(temp.next!=null){
+            temp = temp.next;
+            count++;
+        }
+        return count;
+    }
+    //方法十: 删除单链表中的结点，有五种情况:1.删除空链表;2.删除第一个结点;3.删除中间结点;4.删除最后一个结点;5.删除不存在的结点;
+    //需要注意的是，在很多个if-else语句下，容易出现空指针错误，要及时加上判断条件
+    public void delete(HeroNode hero){
+        HeroNode temp = head;
+        int count = 0;
+        if(temp.next==null){
+            System.out.println("链表中没有元素，不能进行删除操作");
+        }
+        while(temp.next!=null){
+            temp = temp.next;
+            count++;
+            if(count==1){
+                if(temp.no==hero.no){
+                    HeroNode temp1 = head;
+                    temp1.next = temp.next;
+                    break;
+                }else{
+                    if(temp.next!=null){
+                        if(temp.next.next!=null){
+                            if(temp.next.no==hero.no){
+                                temp.next = temp.next.next;
+                                break;
+                            }
+                        }else{
+                            if(temp.next.no==hero.no){
+                                temp.next = null;
+                                break;
+                            }
+                            else{
+                                System.out.println("链表里没有这代号的对象");
+                                break;
+                            }
+                        }
+                    }else{
+                        System.out.println("链表里没有这代号的对象");
+                        break;
+                    }
+
+                }
+            }else{
+                if(temp.next!=null){
+                    if(temp.next.next!=null){
+                        if(temp.next.no==hero.no){
+                            temp.next = temp.next.next;
+                            break;
+                        }
+                    }else{
+                        if(temp.next.no==hero.no) {
+                            temp.next = null;
+                            break;
+                        }else{
+                            System.out.println("链表里没有这代号的对象");
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
